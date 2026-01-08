@@ -7,6 +7,7 @@ const SearchResults = ({ results }: { results: any }) => {
       {results.map((result: any, id: number) => {
         return <SearchResult key={id} result={result} />;
       })}
+      <span className="p-2 text-sm text-gray-400">No more results</span>
     </div>
   );
 };

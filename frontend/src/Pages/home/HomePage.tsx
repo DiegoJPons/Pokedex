@@ -91,12 +91,12 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Scrollable area with viewportRef instead of ref */}
+      {/* Scrollable area*/}
       <ScrollArea
         className="flex-1 overflow-y-auto px-6 pb-4 py-6"
-        viewportRef={scrollViewportRef} // <-- use viewportRef here
+        viewportRef={scrollViewportRef}
       >
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="ml-2 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
             <PokedexEntrySkeleton />
           ) : (

@@ -1,16 +1,16 @@
 import express from "express";
-import { Team } from "../models/team.model.js";
+import {
+  getAllTeams,
+  updateTeam,
+  deleteTeam,
+  createNewTeam,
+} from "../controller/team.controller.js";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  try {
-    const teams = await Team.find().populate("user");
-    res.json(teams);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to fetch teams" });
-  }
-});
+router.get("/", getAllTeams);
+router.put("/:teamId", updateTeam);
+router.delete("/:teamId", deleteTeam);
+router.post("/", createNewTeam);
 
 export default router;

@@ -1,5 +1,6 @@
 import Type from "./TypeBadge";
 import { useNavigate } from "react-router-dom";
+import { useTeamStore } from "@/stores/useTeamStore";
 
 type PokedexEntryProps = {
   id: number;
@@ -10,6 +11,12 @@ type PokedexEntryProps = {
 
 const PokedexEntry = ({ id, name, imageUrl, types }: PokedexEntryProps) => {
   const navigate = useNavigate();
+  const { editingTeamId, addPokemonToTempList } = useTeamStore();
+
+  const handleAddPokemon = (e: React.MouseEvent) => {
+    e.stopPropagation(); // prevent card click navigation if needed
+    addPokemonToTempList({ id, name, imageUrl, types });
+  };
 
   return (
     <div className="p-2">
@@ -23,6 +30,16 @@ const PokedexEntry = ({ id, name, imageUrl, types }: PokedexEntryProps) => {
         <span className="absolute top-2 left-2 text-sm font-bold text-gray-600">
           #{id}
         </span>
+
+        {/* Add to Team button */}
+        {editingTeamId && (
+          <button
+            onClick={handleAddPokemon}
+            className="absolute top-2 right-2 px-2 py-1 text-xs rounded bg-blue-500 text-white hover:bg-blue-600 transition z-10"
+          >
+            Add to team
+          </button>
+        )}
 
         {/* Image */}
         <img src={imageUrl} alt={name} className="w-24 h-24 object-contain" />

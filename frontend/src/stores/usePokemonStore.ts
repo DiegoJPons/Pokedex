@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { axiosInstance } from "@/lib/axios";
+import { axiosInstance } from "@/lib/publicAxios";
 
 export type Evolution = {
   id: number;

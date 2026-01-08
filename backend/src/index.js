@@ -6,9 +6,9 @@ import { connectDB } from "./lib/db.js";
 
 import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
-import pokemonRoutes from "./routes/pokemon.route.js";
 import teamRoutes from "./routes/team.route.js";
-
+import { clerkMiddleware } from "@clerk/express";
+import { protectRoute } from "./middleware/auth.middleware.js";
 dotenv.config();
 
 const app = express();
@@ -21,12 +21,12 @@ app.use(
   })
 );
 
-app.use(express.json()); // to parse req.body
+app.use(express.json());
+app.use(clerkMiddleware()); // this will add auth to req obj => req.auth
 
-app.use("/api/users", userRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/pokemon", pokemonRoutes);
-app.use("/api/teams", teamRoutes);
+app.use("/api/users", protectRoute, userRoutes);
+app.use("/api/auth", protectRoute, authRoutes);
+app.use("/api/teams", protectRoute, teamRoutes);
 
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);
