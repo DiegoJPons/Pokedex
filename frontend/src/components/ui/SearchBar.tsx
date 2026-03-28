@@ -41,25 +41,24 @@ const SearchBar = ({
     setInput(value);
     setSearchInput(value);
     if (value.trim() === "") {
-      setResults([]); // Clear results when input is empty
+      setResults([]);
       return;
     }
     fetchData(value);
   };
 
   return (
-    <div className="bg-white w-full h-10 rounded-md px-[15px] shadow-md flex items-center">
-      <div className="text-[royalblue] text-xl mr-2">
+    <div className="flex h-12 w-full items-center gap-3 rounded-full border border-primary/30 bg-white/[0.06] px-4 shadow-[0_0_24px_-12px_hsl(var(--primary)/0.22)] backdrop-blur-md transition focus-within:border-primary/55 focus-within:shadow-[0_0_32px_-10px_hsl(var(--primary)/0.35)] focus-within:ring-2 focus-within:ring-primary/30">
+      <span className="shrink-0 text-lg text-primary/80" aria-hidden>
         <FaSearch />
-      </div>
+      </span>
       <input
-        className="bg-transparent w-full h-full ml-1 text-xl focus:outline-none"
-        placeholder="Type to search..."
+        className="h-full w-full bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
+        placeholder="Search by name…"
         value={input}
         onChange={(e) => handleChange(e.target.value)}
         onFocus={() => {
           if (input.trim() !== "") {
-            // Show dropdown when input gains focus and has text
             setSearchInput(input);
           }
         }}

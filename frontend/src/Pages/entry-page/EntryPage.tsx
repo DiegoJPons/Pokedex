@@ -1,10 +1,38 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowBigLeftIcon, ArrowBigRightIcon } from "lucide-react"; // arrow icons
+import type { LucideIcon } from "lucide-react";
+import { ArrowBigLeftIcon, ArrowBigRightIcon, Ruler, Weight } from "lucide-react";
 import { type Pokemon, usePokemonStore } from "@/stores/usePokemonStore";
 import { useEffect, useState } from "react";
 import Type from "../home/components/TypeBadge";
 import { MarsIcon, VenusIcon } from "lucide-react";
 import EvolutionLine from "./components/EvolutionLine";
+
+const StatCard = ({
+  icon: Icon,
+  label,
+  value,
+  unit,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string | number;
+  unit?: string;
+}) => (
+  <div className="border-glow-sm rounded-xl px-4 py-3">
+    <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <Icon className="size-3.5 text-primary" />
+      {label}
+    </div>
+    <div className="mt-1 font-mono-nums text-lg font-semibold text-foreground">
+      {value}
+      {unit && (
+        <span className="ml-1 text-sm font-normal text-muted-foreground">
+          {unit}
+        </span>
+      )}
+    </div>
+  </div>
+);
 
 const EntryPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,103 +60,144 @@ const EntryPage = () => {
     str.charAt(0).toUpperCase() + str.slice(1);
 
   const currentId = Number(id);
-  const maxPokemonId = 1025; // adjust based on how many Pokémon you support
+  const maxPokemonId = 1025;
   const hasPrev = currentId > 1;
   const hasNext = currentId < maxPokemonId;
 
   return (
-    <div className="flex flex-col p-6 gap-8">
+    <div className="relative flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-4 md:p-8">
       {isLoading ? (
-        <div>Loading...</div>
+        <div className="relative z-[1] flex flex-col gap-6 animate-pulse">
+          <div className="flex flex-col gap-6 lg:flex-row">
+            <div className="h-80 rounded-2xl bg-white/5 lg:w-2/5" />
+            <div className="flex flex-1 flex-col gap-4">
+              <div className="h-10 w-2/3 rounded-lg bg-white/5" />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="h-20 rounded-xl bg-white/5" />
+                <div className="h-20 rounded-xl bg-white/5" />
+              </div>
+              <div className="h-24 rounded-xl bg-white/5" />
+            </div>
+          </div>
+          <div className="h-40 rounded-2xl bg-white/5" />
+        </div>
       ) : !pokemon ? (
-        <div>Pokémon not found.</div>
+        <div className="relative z-[1] rounded-2xl border border-dashed border-primary/35 bg-white/[0.03] p-12 text-center text-muted-foreground shadow-[0_0_32px_-14px_hsl(var(--primary)/0.25)]">
+          Pokémon not found.
+        </div>
       ) : (
         <>
-          <div className="flex gap-8">
-            {/* Left side */}
-            <div className="border-4 border-cyan-400/50 bg bg-blue-100 rounded-lg shadow p-6 flex flex-col items-center gap-4 w-1/3">
-              <span className="text-lg text-gray-600">#{pokemon.id}</span>
-              <img
-                src={pokemon.imageUrl}
-                alt={pokemon.name}
-                className="w-48 h-48 object-contain"
-              />
-              <h1 className="text-2xl font-bold">{capitalize(pokemon.name)}</h1>
-            </div>
-
-            {/* Right side */}
-            <div className="border-4 border-cyan-400/50 bg-blue-100 rounded-lg shadow p-6 flex flex-col gap-4 w-2/3">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="font-semibold">Height:</span>{" "}
-                  {pokemon.height} m
-                </div>
-                <div>
-                  <span className="font-semibold">Weight:</span>{" "}
-                  {pokemon.weight} kg
-                </div>
-                <div className="flex items-center gap-2 mt-5">
-                  <span className="font-semibold">Gender:</span>
-                  {pokemon.gender === "Male" && (
-                    <MarsIcon className="w-5 h-5 text-blue-500" />
-                  )}
-                  {pokemon.gender === "Female" && (
-                    <VenusIcon className="w-5 h-5 text-pink-500" />
-                  )}
-                  {pokemon.gender === "Both" && (
-                    <>
-                      <MarsIcon className="w-6 h-6 text-blue-500" />
-                      <VenusIcon className="w-6 h-6 text-pink-500" />
-                    </>
-                  )}
-                </div>
-                <div className="mt-5">
-                  <span className="font-semibold">Abilities:</span>{" "}
-                  {pokemon.abilities.join(", ")}
-                </div>
+          <div className="relative z-[1] flex flex-col gap-8 lg:flex-row lg:items-stretch">
+            <div className="glass-panel flex w-full flex-col items-center gap-4 p-8 lg:w-[38%]">
+              <span className="font-mono-nums text-sm text-muted-foreground">
+                #{String(pokemon.id).padStart(4, "0")}
+              </span>
+              <div className="border-glow-sm flex size-56 items-center justify-center rounded-2xl">
+                <img
+                  src={pokemon.imageUrl}
+                  alt={pokemon.name}
+                  className="size-44 object-contain"
+                />
               </div>
-
-              <div className="flex gap-2 mt-10">
-                <span className="font-semibold">Types:</span>
+              <h1 className="text-center text-3xl font-bold tracking-tight text-foreground">
+                {capitalize(pokemon.name)}
+              </h1>
+              <div className="flex flex-wrap justify-center gap-2">
                 {pokemon.types.map((type) => (
                   <Type key={type} type={type} />
                 ))}
               </div>
+            </div>
 
-              <div className="flex gap-2 mt-10">
-                <span className="font-semibold">Weaknesses:</span>
-                {(pokemon.weaknesses || []).map((weak) => (
-                  <Type key={weak} type={weak} />
-                ))}
+            <div className="glass-panel flex flex-1 flex-col gap-6 p-6 md:p-8">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Profile
+              </h2>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <StatCard
+                  icon={Ruler}
+                  label="Height"
+                  value={pokemon.height}
+                  unit="m"
+                />
+                <StatCard
+                  icon={Weight}
+                  label="Weight"
+                  value={pokemon.weight}
+                  unit="kg"
+                />
+              </div>
+
+              <div className="border-glow-sm rounded-xl p-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Gender
+                </span>
+                <div className="mt-2 flex items-center gap-2">
+                  {pokemon.gender === "Male" && (
+                    <MarsIcon className="size-6 text-sky-400" />
+                  )}
+                  {pokemon.gender === "Female" && (
+                    <VenusIcon className="size-6 text-pink-400" />
+                  )}
+                  {pokemon.gender === "Both" && (
+                    <>
+                      <MarsIcon className="size-6 text-sky-400" />
+                      <VenusIcon className="size-6 text-pink-400" />
+                    </>
+                  )}
+                  <span className="text-foreground">{pokemon.gender}</span>
+                </div>
+              </div>
+
+              <div className="border-glow-sm rounded-xl p-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Abilities
+                </span>
+                <p className="mt-2 text-foreground">
+                  {pokemon.abilities.join(", ")}
+                </p>
+              </div>
+
+              <div className="border-glow-sm rounded-xl p-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Weaknesses
+                </span>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(pokemon.weaknesses || []).map((weak) => (
+                    <Type key={weak} type={weak} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Evolution Line */}
-          <div className="border-4 border-cyan-400/50 bg bg-blue-100 rounded-lg shadow p-6 flex flex-col items-center gap-4 w-full">
-            <span className="text-xl font-bold">Evolution Line</span>
+          <div className="relative z-[1] glass-panel flex flex-col gap-4 p-6 md:p-8">
+            <h2 className="text-center text-lg font-semibold tracking-tight">
+              Evolution line
+            </h2>
             <EvolutionLine evolutions={pokemon.evolutions || []} />
           </div>
 
-          {/* Navigation Arrows */}
-          <div className="flex justify-center gap-4 items-center mt-2 w-full">
+          <div className="relative z-[1] flex flex-wrap items-center justify-center gap-4 pb-2">
             {hasPrev ? (
               <button
+                type="button"
                 onClick={() => navigate(`/pokemon/${currentId - 1}`)}
-                className="border-4 border-cyan-400/50 flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:scale-105 transition-transform"
+                className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-white/[0.06] px-5 py-2.5 font-medium text-foreground shadow-[0_0_24px_-10px_hsl(var(--primary)/0.25)] transition hover:border-primary/50 hover:bg-primary/10 hover:shadow-[0_0_32px_-10px_hsl(var(--primary)/0.35)]"
               >
-                <ArrowBigLeftIcon /> Previous
+                <ArrowBigLeftIcon className="size-5" /> Previous
               </button>
             ) : (
-              <div /> // keeps spacing when prev doesn't show
+              <div className="min-w-[120px]" />
             )}
 
             {hasNext && (
               <button
+                type="button"
                 onClick={() => navigate(`/pokemon/${currentId + 1}`)}
-                className="border-4 border-cyan-400/50 flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:scale-105 transition-transform"
+                className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-white/[0.06] px-5 py-2.5 font-medium text-foreground shadow-[0_0_24px_-10px_hsl(var(--primary)/0.25)] transition hover:border-primary/50 hover:bg-primary/10 hover:shadow-[0_0_32px_-10px_hsl(var(--primary)/0.35)]"
               >
-                Next <ArrowBigRightIcon />
+                Next <ArrowBigRightIcon className="size-5" />
               </button>
             )}
           </div>

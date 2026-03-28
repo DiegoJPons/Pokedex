@@ -1,6 +1,7 @@
-import Type from "./TypeBadge";
+import Type, { typeAccentBorder } from "./TypeBadge";
 import { useNavigate } from "react-router-dom";
 import { useTeamStore } from "@/stores/useTeamStore";
+import { UserPlus } from "lucide-react";
 
 type PokedexEntryProps = {
   id: number;
@@ -14,43 +15,59 @@ const PokedexEntry = ({ id, name, imageUrl, types }: PokedexEntryProps) => {
   const { editingTeamId, addPokemonToTempList } = useTeamStore();
 
   const handleAddPokemon = (e: React.MouseEvent) => {
-    e.stopPropagation(); // prevent card click navigation if needed
+    e.stopPropagation();
     addPokemonToTempList({ id, name, imageUrl, types });
   };
 
+  const primary = types[0]?.toLowerCase() ?? "normal";
+  const accentClass =
+    typeAccentBorder[primary] ?? "border-l-cyan-500/60";
+
   return (
-    <div className="p-2">
-      {" "}
-      {/* Padding gives space for border to scale */}
+    <div className="p-1">
       <div
+        role="button"
+        tabIndex={0}
         onClick={() => navigate(`/pokemon/${id}`)}
-        className="border-4 border-cyan-400/50 relative p-4 bg-white rounded shadow flex flex-col items-center transition-transform duration-200 ease-out cursor-pointer hover:scale-105 hover:shadow-lg hover:bg-gray-50"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            navigate(`/pokemon/${id}`);
+          }
+        }}
+        className={`group relative flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl border border-white/12 bg-gradient-to-b from-white/[0.08] to-white/[0.02] p-4 shadow-lg backdrop-blur-sm transition duration-300 ease-out border-l-4 ${accentClass} hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_0_28px_-10px_hsl(var(--primary)/0.3)]`}
       >
-        {/* Number at top-left */}
-        <span className="absolute top-2 left-2 text-sm font-bold text-gray-600">
-          #{id}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
+
+        <span className="absolute left-3 top-2.5 font-mono-nums text-xs font-medium text-muted-foreground">
+          #{String(id).padStart(4, "0")}
         </span>
 
-        {/* Add to Team button */}
         {editingTeamId && (
           <button
+            type="button"
             onClick={handleAddPokemon}
-            className="absolute top-2 right-2 px-2 py-1 text-xs rounded bg-blue-500 text-white hover:bg-blue-600 transition z-10"
+            className="absolute right-2 top-2 z-10 flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/30 transition hover:bg-primary/90"
           >
-            Add to team
+            <UserPlus className="size-3.5" />
+            Add
           </button>
         )}
 
-        {/* Image */}
-        <img src={imageUrl} alt={name} className="w-24 h-24 object-contain" />
-
-        {/* Name */}
-        <div className="mt-2 font-semibold">
-          {name.charAt(0).toUpperCase() + name.slice(1)}
+        <div className="relative mt-6 flex size-28 items-center justify-center rounded-2xl bg-gradient-to-b from-white/10 to-transparent ring-1 ring-white/10">
+          <div className="absolute inset-2 rounded-xl bg-[radial-gradient(circle_at_50%_70%,hsl(187_92%_48%/0.12),transparent_65%)]" />
+          <img
+            src={imageUrl}
+            alt=""
+            className="relative z-[1] size-24 object-contain drop-shadow-lg transition duration-300 group-hover:scale-110"
+          />
         </div>
 
-        {/* Types */}
-        <div className="flex gap-2 mt-1">
+        <div className="mt-3 text-center font-semibold capitalize tracking-tight text-foreground">
+          {name}
+        </div>
+
+        <div className="mt-2 flex flex-wrap justify-center gap-1.5">
           {types.map((type) => (
             <Type key={type} type={type} />
           ))}
