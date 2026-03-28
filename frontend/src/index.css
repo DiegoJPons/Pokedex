@@ -80,29 +80,44 @@
     font-family: "JetBrains Mono", ui-monospace, monospace;
   }
 
+  /**
+   * Poké Ball pattern (public/pokeball-pattern.png) + filters to align with
+   * primary cyan / dark UI. ::before keeps filters off UI text.
+   */
   .app-grid-bg {
+    position: relative;
+    isolation: isolate;
+    background-color: hsl(var(--background));
     background-image:
       linear-gradient(
         to bottom,
-        hsl(var(--background) / 0.92),
-        hsl(var(--background) / 0.97)
+        hsl(var(--background) / 0.82),
+        hsl(var(--background) / 0.94)
       ),
       radial-gradient(
-        ellipse 80% 50% at 50% -20%,
-        hsl(187 92% 48% / 0.18),
-        transparent
-      ),
-      linear-gradient(
-          hsl(217 33% 18% / 0.35) 1px,
-          transparent 1px
-        )
-        0 0 / 48px 48px,
-      linear-gradient(
-          90deg,
-          hsl(217 33% 18% / 0.35) 1px,
-          transparent 1px
-        )
-        0 0 / 48px 48px;
+        ellipse 75% 55% at 50% -18%,
+        hsl(var(--primary) / 0.14),
+        transparent 58%
+      );
+  }
+
+  .app-grid-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url("/pokeball-pattern.png");
+    background-size: clamp(220px, 24vw, 400px);
+    background-repeat: repeat;
+    background-position: center;
+    opacity: 0.48;
+    filter: hue-rotate(162deg) saturate(0.88) brightness(1.18) contrast(1.12);
+    pointer-events: none;
+  }
+
+  .app-grid-bg > * {
+    position: relative;
+    z-index: 1;
   }
 
   /** Frosted panels: cyan-tinted border + soft outer glow */
